@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Small BlockChain Project</title>
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+      crossorigin="anonymous"
+    />
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body style="padding-top: 50px">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6" style="padding-top: 20px">
+          <h3 style="text-align: center" id="name1">Person 1</h3>
+          <form role="form" id="form1">
+            <div class="input-group mb-3" style="padding-top: 30px">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default"
+                  >Enter Amount to Send</span
+                >
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                placeholder="Enter value greater than 0"
+                required
+                id="input1"
+              />
+            </div>
+            <button onclick="myFunction1()" class="btn btn-success">
+              Send
+            </button>
+          </form>
+          <h5 style="padding-top: 10px" id="person1">Current Balance(Coin): </h5>
+        </div>
+
+        <div class="col-sm-6" style="padding-top: 20px">
+          <h3 style="text-align: center" id="name2">Person 2</h3>
+          <form role="form" id="form2">
+            <div class="input-group mb-3" style="padding-top: 30px">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default"
+                  >Enter Amount to Send</span
+                >
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                placeholder="Enter value greater than 0"
+                required
+                id="input2"
+              />
+            </div>
+            <button onclick="myFunction2()" class="btn btn-success">
+              Send
+            </button>
+          </form>
+          <h5 style="padding-top: 10px" id="person2">Current Balance(Coin): </h5>
+          </h5>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="js/web3.min.js"></script>
+  <script>
+    // Initialize Web3
+    if (typeof web3 !== "undefined") {
+      //works when connected to metamask
+      web3 = new Web3(web3.currentProvider);
+    } else {
+      //gets connection from ganache
+      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+    }
+
+    // Set a default account
+    web3.eth.defaultAccount = web3.eth.accounts[0];
+
+    // Set Contract ABI
+    var contractAbi = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_val",
+				"type": "uint256"
+			}
+		],
+		"name": "send2",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name1",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name2",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "amt1",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "amt2",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_val",
+				"type": "uint256"
+			}
+		],
+		"name": "send1",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	}
+]; 
+
+    // Set Contract Address
+    var contractAddress = "0xeAEda0513379B0fe981FA9e60F540AbfDe6F0041";
+
+    // Set the Contract which will be used to call the contract function
+    var contract = web3.eth.contract(contractAbi).at(contractAddress);
+
+    // Display person1 amount
+    contract.amt1(function (err, amt1) {
+      $("#person1").append(amt1.toString());
+    });
+
+    // Display person2 amount
+    contract.amt2(function (err, amt2) {
+      $("#person2").append(amt2.toString());
+    });
+
+    //display name of persons
+
+    contract.name1(function (err, name1) {
+      $("#name1").html(name1);
+    });
+
+    contract.name2(function (err, name2) {
+      $("#name2").html(name2);
+    });
+
+    // transfer the amount
+    function myFunction1() {
+      var amt = parseInt($("#input1").val());
+      console.log(amt);
+      contract.send1(amt);
+	  
+	    var name1=contract.name1();
+	    var name2=contract.name2();
+
+	    alert(`${name1} transferred ${amt.toString()} Coin to ${name2}.`);
+    }
+
+    function myFunction2() {
+      var amt = parseInt($("#input2").val());
+      console.log(amt);
+      contract.send2(amt);
+
+	    var name1=contract.name2();
+	    var name2=contract.name1();
+
+	    alert(`${name1} transferred ${amt.toString()} Coin to ${name2}.`);
+    }
+  </script>
+</html>
